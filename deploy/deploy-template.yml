@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: common-web-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app-type: java-app
+  template:
+    metadata:
+      labels:
+        app-type: java-app
+        service-name: common-web-app-service
+    spec:
+      containers:
+        - name: common-web-app
+          image: 192.168.188.131:5000/common-web-app:v1
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 10000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: common-web-app-service
+spec:
+  type: NodePort
+  selector:
+    service-name: common-web-app-service
+  ports:
+    - name: http
+      port: 10000 # ClusterIP监听的端口。port是暴露在cluster ip上的端口，port提供了集群内部客户端访问service的入口，即clusterIP:port
+      targetPort: 10000 # Pod监听的端口。targetPort是pod上的端口，从port/nodePort上来的数据，经过kube-proxy流入到后端pod的targetPort上，最后进入容器。与制作容器时暴露的端口一致（使用DockerFile中的EXPOSE）。
+      nodePort: 30000 # 端口范围在 30000～3276。nodePort 提供了集群外部客户端访问 Service 的端口，通过 nodeIP:nodePort 提供了外部流量访问k8s集群中service的入口
