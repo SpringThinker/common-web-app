@@ -1,5 +1,9 @@
 spring:
   application:
     name: common-web-app-service
+  security:
+    user:
+      name: ${SECRETS_SECURITY_USER} # load from Environment
+      password: ${SECRETS_SECURITY_USER_PASSWD} # Load from Environment
 server:
   port: 10000

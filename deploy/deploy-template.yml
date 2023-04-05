@@ -15,7 +15,18 @@ spec:
     spec:
       containers:
         - name: common-web-app
-          image: 192.168.188.131:5000/common-web-app:v1
+          env:
+            - name: SECRETS_SECURITY_USER # secret create command in server: kubectl create secret generic spring-security --from-literal=spring.user.name=xlys --from-literal=spring.user.password=xlys
+              valueFrom:
+                secretKeyRef:
+                  name: spring-security
+                  key: spring.user.name
+            - name: SECRETS_SECURITY_USER_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: spring-security
+                  key: spring.user.password
+          image: 192.168.188.134:5000/common-web-app:v2
           imagePullPolicy: IfNotPresent
           resources:
             limits:
